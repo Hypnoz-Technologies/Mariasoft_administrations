@@ -1,6 +1,7 @@
-package net.mariasoft.administrations.service;
+package net.mariasoft.administrations.service.structres;
 
 import net.mariasoft.administrations.dtos.StructuresDto;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,10 +25,10 @@ public interface IStructureService {
     /**
      * Deletes an existing structure.
      *
-     * @param structuresDto The structure ID.
+     * @param sid The structure ID.
      * @return The deleted structure.
      */
-    StructuresDto deleteStructure(StructuresDto structuresDto);
+    void deleteStructure(Long sid);
 
     /**
      * Returns a structure by its ID.
@@ -36,4 +37,12 @@ public interface IStructureService {
      * @return The requested structure.
      */
     StructuresDto getStructure(Long sid);
+
+    /**
+     * Uploads a logo for the structure.
+     *
+     * @param structuresDto The structure ID.
+     * @param file The logo file.
+     */
+    void uploadStructureLogo(StructuresDto structuresDto, MultipartFile file);
 }

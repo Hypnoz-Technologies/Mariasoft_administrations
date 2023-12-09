@@ -6,7 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import net.mariasoft.administrations.dtos.StructuresDto;
-import net.mariasoft.administrations.service.impl.StructureService;
+import net.mariasoft.administrations.service.structres.StructureService;
+import net.mariasoft.administrations.web.rest.errors.BadRequestAlertException;
 import net.mariasoft.administrations.web.rest.errors.DefaultErrorApiResponse;
 import net.mariasoft.administrations.web.rest.errors.HeaderUtil;
 import org.slf4j.Logger;
@@ -15,13 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -51,12 +46,12 @@ public class StructureResource {
     public ResponseEntity<StructuresDto> creationStructure(@Valid @RequestBody StructuresDto structuresDto) {
         log.debug("REST request to save Structure : {}", structuresDto);
         try {
-            if(structuresDto.getId() == null) {
-                log.debug("Structure not created");
+            if(structuresDto.id() != null) {
+                throw new BadRequestAlertException("A new structure cannot already have an ID", "userManagement", "idexists");
             }
             StructuresDto result = structureService.creationStructure(structuresDto);
-            return ResponseEntity.created(new URI("/api/structures/" + structuresDto.getId()))
-                    .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getStrRaisonSociale()))
+            return ResponseEntity.created(new URI("/api/structures/" + structuresDto.id()))
+                    .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.strRaisonSociale()))
                     .body(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -77,6 +72,52 @@ public class StructureResource {
         log.debug("REST request to get Structure : {}", sid);
         StructuresDto result = structureService.getStructure(sid);
         return ResponseEntity.accepted().headers(HeaderUtil.createEntityCreationAlert(applicationName, true,
-                ENTITY_NAME, result.getStrRaisonSociale())).body(result);
+                ENTITY_NAME, result.strRaisonSociale())).body(result);
     }
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "201", description = "update Structure avec Success", content =
+                            {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation =
+                                    StructuresDto.class))})
+            }
+    )
+    @PutMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<StructuresDto> updateStructure(@Valid @RequestBody StructuresDto structuresDto){
+        log.debug("REST request to update Structure : {}", structuresDto);
+        try {
+            if(structuresDto.id() == null) {
+                throw new BadRequestAlertException("A update structure cannot already haven't an ID", "userManagement", "idnotexists");
+            }
+            StructuresDto result = structureService.updateStructure(structuresDto);
+            return ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.strRaisonSociale()))
+                    .body(result);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(structuresDto);
+        }
+    }
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Delete Structure avec Success", content =
+                            {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation =
+                                    StructuresDto.class))})
+            }
+    )
+    @DeleteMapping("/{sid}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> deleteStructure(@PathVariable("sid") Long sid){
+        log.debug("REST request to delete Structure : {}", sid);
+        try {
+            structureService.deleteStructure(sid);
+            return ResponseEntity.ok()
+                    .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, sid.toString()))
+                    .build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
 }
