@@ -11,6 +11,7 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface StructuresMapper {
+
     Structures toEntity(StructuresDto structuresDto);
 
     StructuresDto toDto(Structures structures);

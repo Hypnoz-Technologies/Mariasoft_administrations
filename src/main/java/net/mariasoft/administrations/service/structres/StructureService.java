@@ -46,9 +46,9 @@ public class StructureService implements IStructureService {
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public StructuresDto updateStructure(StructuresDto structuresDto) {
         log.debug("Attempting to update Structure with info: {}", structuresDto);
-        Structures existingStructure = structuresRepository.findById(structuresDto.id())
+        Structures existingStructure = structuresRepository.findById(structuresDto.getId())
                 .orElseThrow(() -> {
-                    log.error("Failed to find Structure id: {}", structuresDto.id());
+                    log.error("Failed to find Structure id: {}", structuresDto.getId());
                     throw new IllegalArgumentException("Structure with given id not found");
                 });
         existingStructure = structuresMapper.partialUpdate(structuresDto, existingStructure);
@@ -90,21 +90,21 @@ public class StructureService implements IStructureService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public void uploadStructureLogo(StructuresDto structuresDto, MultipartFile file) {
-        log.debug("Attempting to upload a logo for structure ID: {}", structuresDto.id());
+        log.debug("Attempting to upload a logo for structure ID: {}", structuresDto.getId());
 
-        Structures existingStructure = validateStructureExists(structuresDto.id());
+        Structures existingStructure = validateStructureExists(structuresDto.getId());
 
-        Path logoPath = prepareLogoPath(file,structuresDto.id());
+        Path logoPath = prepareLogoPath(file,structuresDto.getId());
 
         try {
             deleteExistingLogo(logoPath);
 
             saveLogo(logoPath, file);
 
-            log.debug("Logo uploaded successfully for structure ID: {}", structuresDto.id());
+            log.debug("Logo uploaded successfully for structure ID: {}", structuresDto.getId());
         } catch (IOException e) {
-            log.error("Error while uploading logo for structure ID: {}", structuresDto.id(), e);
-            throw new RuntimeException("Could not upload logo for structure ID: " + structuresDto.id(), e);
+            log.error("Error while uploading logo for structure ID: {}", structuresDto.getId(), e);
+            throw new RuntimeException("Could not upload logo for structure ID: " + structuresDto.getId(), e);
         }
     }
 

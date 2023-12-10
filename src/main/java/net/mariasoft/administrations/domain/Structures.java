@@ -41,13 +41,13 @@ public class Structures extends AbstractAuditingEntity<Long> implements Serializ
     private Integer strMaitreCabinet;
     @NotNull(message = "La Rasison Social ne peut pas être null")
     @Size(max = 100)
-    @Column(name = "str_raison_sociale")
+    @Column(name = "str_raison_sociale",unique = true)
     private String strRaisonSociale;
     @Column(name = "str_Descriptif")
     private String strDescriptif;
     @NotNull(message = "Le Sigle ne peut pas être null")
     @Size(message = "Le sigle doit être compris entre 2 et 50 caractères", min = 2, max = 50)
-    @Column(name = "str_Sigle")
+    @Column(name = "str_Sigle",unique = true)
     private String strSigle;
     @Column(name = "str_nom_pays")
     private String strNomPays;

@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.text.MessageFormat;
 
 @RestController
 @DefaultErrorApiResponse
@@ -46,12 +47,12 @@ public class StructureResource {
     public ResponseEntity<StructuresDto> creationStructure(@Valid @RequestBody StructuresDto structuresDto) {
         log.debug("REST request to save Structure : {}", structuresDto);
         try {
-            if(structuresDto.id() != null) {
+            if(structuresDto.getId() != null) {
                 throw new BadRequestAlertException("A new structure cannot already have an ID", "userManagement", "idexists");
             }
             StructuresDto result = structureService.creationStructure(structuresDto);
-            return ResponseEntity.created(new URI("/api/structures/" + structuresDto.id()))
-                    .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.strRaisonSociale()))
+            return ResponseEntity.created(new URI(MessageFormat.format("/api/structures/{0}", result.getId())))
+                    .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getStrRaisonSociale()))
                     .body(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -72,7 +73,7 @@ public class StructureResource {
         log.debug("REST request to get Structure : {}", sid);
         StructuresDto result = structureService.getStructure(sid);
         return ResponseEntity.accepted().headers(HeaderUtil.createEntityCreationAlert(applicationName, true,
-                ENTITY_NAME, result.strRaisonSociale())).body(result);
+                ENTITY_NAME, result.getStrRaisonSociale())).body(result);
     }
     @ApiResponses(
             value = {
@@ -86,12 +87,12 @@ public class StructureResource {
     public ResponseEntity<StructuresDto> updateStructure(@Valid @RequestBody StructuresDto structuresDto){
         log.debug("REST request to update Structure : {}", structuresDto);
         try {
-            if(structuresDto.id() == null) {
+            if(structuresDto.getId() == null) {
                 throw new BadRequestAlertException("A update structure cannot already haven't an ID", "userManagement", "idnotexists");
             }
             StructuresDto result = structureService.updateStructure(structuresDto);
             return ResponseEntity.ok()
-                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.strRaisonSociale()))
+                    .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getStrRaisonSociale()))
                     .body(result);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
