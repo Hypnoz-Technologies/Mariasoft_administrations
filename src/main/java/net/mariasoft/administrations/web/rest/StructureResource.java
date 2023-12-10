@@ -91,7 +91,7 @@ public class StructureResource {
                 throw new BadRequestAlertException("A update structure cannot already haven't an ID", "userManagement", "idnotexists");
             }
             StructuresDto result = structureService.updateStructure(structuresDto);
-            return ResponseEntity.ok()
+            return ResponseEntity.created(new URI(MessageFormat.format("/api/structures/{0}", result.getId())))
                     .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getStrRaisonSociale()))
                     .body(result);
         }catch (Exception e){

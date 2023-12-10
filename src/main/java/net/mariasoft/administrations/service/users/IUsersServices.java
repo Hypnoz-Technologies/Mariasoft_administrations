@@ -13,7 +13,7 @@ public interface IUsersServices {
 
     UsersDto updateUsers(UsersDto usersDto);
 
-    UsersDto deleteUsers(Long id);
+    void deleteUsers(Long id);
 
     List<UsersDto> getAllUsers(Long sid);
 

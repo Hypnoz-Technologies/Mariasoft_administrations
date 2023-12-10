@@ -20,7 +20,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.NoSuchElementException;
 
+/**
+ * Controller advice class for handling global exceptions.
+ */
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler {
@@ -58,5 +62,10 @@ public class GlobalExceptionHandler {
         errorGlobal.setErrors(errors);
 
         return new ResponseEntity<>(errorGlobal, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }
